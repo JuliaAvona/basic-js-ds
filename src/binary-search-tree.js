@@ -1,124 +1,160 @@
 const { NotImplementedError } = require("../extensions/index.js");
 
-// const { Node } = require('../extensions/list-tree.js');
-
-/**
- * Implement simple binary search tree according to task description
- * using Node from extensions
- */
-
-// class Node {
-//   constructor(data) {
-//     this.data = data;
-//     this.left = null;
-//     this.right = null;
-//   }
-// }
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.left = null;
+    this.right = null;
+  }
+}
 
 class BinarySearchTree {
-  // let root
+  constructor() {
+    this.rootData = null;
+  }
 
   root() {
-    return this.root;
+    return this.rootData;
   }
 
   add(data) {
-    if (this.root) {
-      this.addNode(this.root, data);
-    } else {
-      this.root = new Node(data);
+    this.rootData = putData(this.rootData, data);
+
+    function putData(node, data) {
+      if (!node) {
+        node = new Node(data);
+        return node;
+      }
+
+      if (node.data === data) {
+        return node;
+      }
+
+      if (node.data > data) {
+        node.left = putData(node.left, data);
+      }
+
+      if (node.data < data) {
+        node.right = putData(node.right, data);
+      }
+
+      return node;
     }
   }
 
-  addNode(node, data) {
-    if (node.data > data) {
-      if (node.left === null) {
-        node.left = new Node(data);
-      } else {
-        this.addNode(node.left, data);
+  find(data) {
+    return searchNode(this.rootData, data);
+
+    function searchNode(node, data) {
+      if (!node) {
+        return null;
       }
-    } else {
-      if (node.right === null) {
-        node.right = new Node(data);
+
+      if (node.data === data) {
+        return node;
+      }
+
+      if (node.data < data) {
+        return searchNode(node.right, data);
       } else {
-        this.addNode(node.right, data);
+        return searchNode(node.left, data);
       }
     }
   }
 
   has(data) {
-    //переписать has исп searchNode()
-    return this.search(this.root, data);
-  }
+    return checkNode(this.rootData, data);
 
-  search(node, data) {
-    if (node.data === data) {
-      return true;
-    } else if (node.data > data) {
-      if (node.left === null) {
+    function checkNode(node, data) {
+      if (!node) {
         return false;
-      } else {
-        return this.search(node.left, data);
       }
-    } else {
-      if (node.right === null) {
-        return false;
+
+      if (node.data === data) {
+        return true;
+      }
+
+      if (node.data < data) {
+        return checkNode(node.right, data);
       } else {
-        return this.search(node.right, data);
+        return checkNode(node.left, data);
       }
     }
   }
 
-  find(data) {
-    return this.searchNode(this.root, data);
-  }
+  remove(data) {
+    this.rootData = removeNode(this.rootData, data);
 
-  searchNode(node, data) {
-    if (node.data === data) {
-      return node;
-    } else if (node.data > data) {
-      if (node.left === null) {
+    function removeNode(node, data) {
+      if (!node) {
         return null;
-      } else {
-        return this.search(node.left, data);
       }
-    } else {
-      if (node.right === null) {
-        return null;
+
+      if (node.data < data) {
+        node.right = removeNode(node.right, data);
+        return node;
+      } else if (node.data > data) {
+        node.left = removeNode(node.left, data);
+        return node;
       } else {
-        return this.search(node.right, data);
+        if (!node.left && !node.right) {
+          return null;
+        }
+
+        if (!node.left) {
+          node = node.right;
+          return node;
+        }
+
+        if (!node.right) {
+          node = node.left;
+          return node;
+        }
+
+        let currentData = node.right.data;
+        let nextNode = node.right.left;
+        while (nextNode) {
+          currentData = nextNode.data;
+          nextNode = nextNode.left;
+        }
+
+        node.data = currentData;
+        node.right = removeNode(node.right, currentData);
+        return node;
       }
     }
   }
 
-  remove(data) {}
-
-  removeNode(node, data) {
-    
-  }
-
-  min() {
-    if (this.root) {
-      let node = this.root;
-      while (node.left !== null) {
-        node = node.left;
-      }
-      return node;
-    } else {
+  max(firstNode = this.rootData) {
+    if (!firstNode) {
       return null;
     }
+
+    let currentNode = firstNode.data;
+    let nextNode = firstNode.right;
+
+    while (nextNode) {
+      currentNode = nextNode.data;
+      nextNode = nextNode.right;
+    }
+
+    return currentNode;
   }
 
-  max() {
-    if (this.root) {
-      let node = this.root;
-      while (node.right !== null) {
-        node = node.right;
-      }
-      return node;
-    } else {
+  min(firstNode = this.rootData) {
+    if (!firstNode) {
       return null;
     }
+
+    let currentNode = firstNode.data;
+    let nextNode = firstNode.left;
+
+    while (nextNode) {
+      currentNode = nextNode.data;
+      nextNode = nextNode.left;
+    }
+
+    return currentNode;
   }
 }
 
