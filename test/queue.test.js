@@ -19,6 +19,8 @@ describe('Queue', async () => {
     assert.strictEqual(queue.dequeue(), 6);
   });
 
+  // 7
+
   it.optional('should return correct linked list', () => {
     const { values, dequeueCount, listSnapshot } = getTestingTools(20, 10);
     const queue = new Queue();
